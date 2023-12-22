@@ -71,7 +71,6 @@ app.put("/api/tasks/:id", async (req, res) => {
       description: updateTask.description,
       deadline: updateTask.deadline,
       priority: updateTask.priority,
-      status: updateTask.status,
     },
   };
   const result = await tasksCollection.updateOne(filter, task, options);
