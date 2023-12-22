@@ -7,7 +7,7 @@ const port = 3030;
 app.use(express.json());
 app.use(cors());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri =
   "mongodb+srv://taskUp:A0eyBcTwwaGrKg4s@cluster0.gbcelyw.mongodb.net/?retryWrites=true&w=majority";
 
@@ -55,6 +55,33 @@ app.get("/api/tasks", async (req, res) => {
 app.post("/api/addTask", async (req, res) => {
   const task = req.body;
   const result = await tasksCollection.insertOne(task);
+  console.log(result);
+  res.send(result);
+});
+
+app.put("/api/tasks/:id", async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const options = { upsert: true };
+  const updateTask = req.body;
+  const task = {
+    $set: {
+      title: updateTask.title,
+      userEmail: updateTask.userEmail,
+      description: updateTask.description,
+      deadline: updateTask.deadline,
+      priority: updateTask.priority,
+      status: updateTask.status,
+    },
+  };
+  const result = await tasksCollection.updateOne(filter, task, options);
+  res.send(result);
+});
+
+app.delete("/api/tasks/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await tasksCollection.deleteOne(query);
   console.log(result);
   res.send(result);
 });
